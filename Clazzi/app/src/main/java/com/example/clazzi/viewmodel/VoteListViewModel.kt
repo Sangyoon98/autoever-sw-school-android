@@ -1,10 +1,15 @@
 package com.example.clazzi.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class VoteListViewModel : ViewModel() {
     private val _voteList = MutableStateFlow<List<Vote>>((emptyList()))
@@ -43,5 +48,16 @@ class VoteListViewModel : ViewModel() {
 
     fun addVote(vote: Vote) {
         _voteList.value += vote
+        val db = Firebase.firestore
+        viewModelScope.launch {
+            try {
+                db.collection("votes")
+                    .document(vote.id)
+                    .set(vote)
+                    .await()
+            } catch (e: Exception) {
+
+            }
+        }
     }
 }

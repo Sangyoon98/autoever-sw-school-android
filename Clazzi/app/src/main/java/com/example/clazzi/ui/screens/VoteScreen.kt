@@ -91,7 +91,7 @@ fun VoteScreen(
                     ) {
                         append("익명")
                     }
-                    append("으로 마읆을 전해요")
+                    append("으로 마음을 전해요")
                 },
                 fontSize = 18.sp
             )
