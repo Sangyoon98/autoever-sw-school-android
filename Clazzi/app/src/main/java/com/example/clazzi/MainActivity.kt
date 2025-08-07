@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
                         if (vote != null) {
                             VoteScreen(
                                 navController = navController,
+                                viewModel = voteListViewModel,
                                 vote = vote
                             )
                         } else {

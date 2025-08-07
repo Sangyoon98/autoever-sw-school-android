@@ -24,7 +24,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,14 +43,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.clazzi.model.Vote
+import com.example.clazzi.viewmodel.VoteListViewModel
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoteScreen(
     navController: NavController,
+    viewModel: VoteListViewModel,
     vote: Vote
 ) {
-    var selectOption by remember { mutableIntStateOf(0) }
+    var selectedOptionIndex by remember { mutableIntStateOf(0) }
+    var hasVoted by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -118,10 +126,10 @@ fun VoteScreen(
             vote.voteOptions.forEachIndexed { index, voteOption ->
                 Button(
                     onClick = {
-                        selectOption = index
+                        selectedOptionIndex = index
                     },
                     colors = ButtonDefaults.buttonColors(
-                        if (selectOption == index) Color(0xFF13F8A5) else Color.LightGray.copy(alpha = 0.5f)
+                        if (selectedOptionIndex == index) Color(0xFF13F8A5) else Color.LightGray.copy(alpha = 0.5f)
                     ),
                     modifier = Modifier.width(200.dp)
                 ) {
@@ -131,7 +139,30 @@ fun VoteScreen(
 
             Spacer(Modifier.height(40.dp))
             Button(
-                onClick = {},
+                onClick = {
+                    if (!hasVoted) {
+                        coroutineScope.launch {
+                            val voterId = UUID.randomUUID().toString()
+                            val selectedOption = vote.voteOptions[selectedOptionIndex]
+
+                            val updateOption = selectedOption.copy(
+                                voters = selectedOption.voters + voterId
+                            )
+
+                            val updatedOptions = vote.voteOptions.mapIndexed { index, option ->
+                                if (index == selectedOptionIndex) updateOption else option
+                            }
+
+                            val updatedVote = vote.copy(
+                                voteOptions = updatedOptions
+                            )
+
+                            viewModel.setVote(updatedVote)
+                            hasVoted = true
+                        }
+                    }
+                },
+                enabled = !hasVoted,
                 modifier = Modifier.width(200.dp)
             ) {
                 Text("투표하기")
