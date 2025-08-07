@@ -17,21 +17,27 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.clazzi.model.Vote
 import com.example.clazzi.ui.theme.ClazziTheme
+import com.example.clazzi.viewmodel.VoteListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoteListScreen(
     navController: NavController,
-    voteList: List<Vote>,
+    viewModel: VoteListViewModel,
     onVoteClicked: (String) -> Unit
 ) {
+    val voteList by viewModel.voteList.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -75,7 +81,7 @@ fun VoteListScreenPreview() {
     ClazziTheme {
         VoteListScreen(
             navController = NavController(context = LocalContext.current),
-            voteList = arrayListOf(),
+            viewModel = viewModel(),
             onVoteClicked = {}
         )
     }

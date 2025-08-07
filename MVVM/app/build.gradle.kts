@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.clazzi"
+    namespace = "com.sangyoon.mvvm"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.clazzi"
+        applicationId = "com.sangyoon.mvvm"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -40,8 +40,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.navigation.compose)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

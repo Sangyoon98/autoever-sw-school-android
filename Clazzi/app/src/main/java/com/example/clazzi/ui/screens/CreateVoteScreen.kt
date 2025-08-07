@@ -34,14 +34,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
+import com.example.clazzi.viewmodel.VoteListViewModel
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateVoteScreen(
-    onVoteCreate: (Vote) -> Unit
+    navController: NavController,
+    viewModel: VoteListViewModel,
+//    onVoteCreate: (Vote) -> Unit
 ) {
     val (title, setTitle) = remember { mutableStateOf("") }
     val options = remember { mutableStateListOf("", "") }
@@ -108,7 +112,9 @@ fun CreateVoteScreen(
                             .filter { it.isNotBlank() }
                             .map { VoteOption(id = UUID.randomUUID().toString(), optionText = it) }
                     )
-                    onVoteCreate(newVote)
+                    viewModel.addVote(vote = newVote)
+                    navController.popBackStack()
+//                    onVoteCreate(newVote)
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

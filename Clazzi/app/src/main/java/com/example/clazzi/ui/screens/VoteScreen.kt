@@ -1,5 +1,6 @@
 package com.example.clazzi.ui.screens
 
+import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -113,39 +114,21 @@ fun VoteScreen(
                     .background(Color.LightGray)
             )
             Spacer(Modifier.height(20.dp))
-            Button(
-                onClick = {
-                    selectOption = 0
-                },
-                colors = ButtonDefaults.buttonColors(
-                    if (selectOption == 0) Color(0xFF13F8A5) else Color.LightGray.copy(alpha = 0.5f)
-                ),
-                modifier = Modifier.width(200.dp)
-            ) {
-                Text("구내 식당")
+
+            vote.voteOptions.forEachIndexed { index, voteOption ->
+                Button(
+                    onClick = {
+                        selectOption = index
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        if (selectOption == index) Color(0xFF13F8A5) else Color.LightGray.copy(alpha = 0.5f)
+                    ),
+                    modifier = Modifier.width(200.dp)
+                ) {
+                    Text(voteOption.optionText)
+                }
             }
-            Button(
-                onClick = {
-                    selectOption = 1
-                },
-                colors = ButtonDefaults.buttonColors(
-                    if (selectOption == 1) Color(0xFF13F8A5) else Color.LightGray.copy(alpha = 0.5f)
-                ),
-                modifier = Modifier.width(200.dp)
-            ) {
-                Text("구내 식당")
-            }
-            Button(
-                onClick = {
-                    selectOption = 2
-                },
-                colors = ButtonDefaults.buttonColors(
-                    if (selectOption == 2) Color(0xFF13F8A5) else Color.LightGray.copy(alpha = 0.5f)
-                ),
-                modifier = Modifier.width(200.dp)
-            ) {
-                Text("구내 식당")
-            }
+
             Spacer(Modifier.height(40.dp))
             Button(
                 onClick = {},
