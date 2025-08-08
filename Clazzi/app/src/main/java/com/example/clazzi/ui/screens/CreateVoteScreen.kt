@@ -1,6 +1,7 @@
 package com.example.clazzi.ui.screens
 
 import android.R.attr.label
+import android.net.Uri
 import android.util.Log.i
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
+import com.example.clazzi.ui.components.ImagePickerWithPermission
 import com.example.clazzi.viewmodel.VoteListViewModel
 import java.util.UUID
 
@@ -54,7 +56,10 @@ fun CreateVoteScreen(
 ) {
     val (title, setTitle) = remember { mutableStateOf("") }
     val options = remember { mutableStateListOf("", "") }
+
     var showImagePickTypeSheet by remember { mutableStateOf(false) }
+    var showImagePicker by remember { mutableStateOf(false) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     Scaffold(
         topBar = {
@@ -110,9 +115,20 @@ fun CreateVoteScreen(
                         },
                         modifier = Modifier.clickable {
                             showImagePickTypeSheet = false
+                            showImagePicker = true
                         }
                     )
                 }
+            }
+
+            // 권한 팝업 및 이미지 선택 화면으로 이동
+            if (showImagePicker) {
+                ImagePickerWithPermission(
+                    onImagePicked = { uri ->
+                        imageUri = uri
+                        showImagePicker = false
+                    }
+                )
             }
 
             Spacer(Modifier.height(16.dp))
