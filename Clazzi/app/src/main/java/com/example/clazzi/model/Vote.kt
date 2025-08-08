@@ -5,7 +5,7 @@ import java.util.Date
 data class Vote(
     val id: String = "",
     val title: String = "",
-    val createdAt: Date? = null,
+    val createAt: Date? = null,
     val voteOptions: List<VoteOption> = emptyList(),
     val imageUrl: String? = null
 ) {

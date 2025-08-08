@@ -9,6 +9,7 @@ import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,7 @@ class VoteListViewModel : ViewModel() {
 
     init {
         db.collection("votes")
+            .orderBy("createAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     Log.e("Firebase", "Error getting documents: ", error)

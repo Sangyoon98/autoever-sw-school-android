@@ -100,7 +100,7 @@ fun VoteItem(vote: Vote, onVoteClicked: (String) -> Unit) {
             Text(vote.title, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "생성일: ${formatDate(vote.createdAt)}"
+                text = "생성일: ${formatDate(vote.createAt)}"
             )
             Text(
                 text = "항목 갯수: ${vote.optionCount}",
