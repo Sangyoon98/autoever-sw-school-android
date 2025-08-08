@@ -86,7 +86,7 @@ class VoteListViewModel : ViewModel() {
                     "id" to vote.id,
                     "title" to vote.title,
                     "imageUrl" to downloadUrl,
-                    "createdAt" to FieldValue.serverTimestamp(),
+                    "createAt" to FieldValue.serverTimestamp(),
                     "voteOptions" to vote.voteOptions.map {
                         hashMapOf(
                             "id" to it.id,
