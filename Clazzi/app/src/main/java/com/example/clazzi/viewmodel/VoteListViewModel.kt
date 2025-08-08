@@ -1,5 +1,7 @@
 package com.example.clazzi.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,10 +10,12 @@ import com.example.clazzi.model.VoteOption
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class VoteListViewModel : ViewModel() {
     val db = Firebase.firestore
@@ -62,13 +66,24 @@ class VoteListViewModel : ViewModel() {
         }
     }
 
-    fun addVote(vote: Vote) {
+    fun addVote(vote: Vote, context: Context, imageUri: Uri) {
         _voteList.value += vote
         viewModelScope.launch {
             try {
+                val storageRef = FirebaseStorage.getInstance().reference
+                val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
+
+                val inputStream = context.contentResolver.openInputStream(imageUri)
+                val uploadTask = inputStream?.let {
+                    imageRef.putStream(it).await()
+                }
+
+                val downloadUrl = imageRef.downloadUrl.await().toString()
+
                 val voteMap = hashMapOf(
                     "id" to vote.id,
                     "title" to vote.title,
+                    "imageUrl" to downloadUrl,
                     "createdAt" to FieldValue.serverTimestamp(),
                     "voteOptions" to vote.voteOptions.map {
                         hashMapOf(

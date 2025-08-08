@@ -1,5 +1,6 @@
 package com.example.clazzi.ui.screens
 
+import android.R.attr.contentDescription
 import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.clazzi.model.Vote
 import com.example.clazzi.viewmodel.VoteListViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -114,7 +116,8 @@ fun VoteScreen(
             )
             Spacer(Modifier.height(20.dp))
             Image(
-                painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                painter = if (vote.imageUrl != null) rememberAsyncImagePainter(vote.imageUrl)
+                else painterResource(id = android.R.drawable.ic_menu_gallery),
                 contentDescription = "투표 사진",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
