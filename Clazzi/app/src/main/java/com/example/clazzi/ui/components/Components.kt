@@ -1,8 +1,12 @@
 package com.example.clazzi.ui.components
 
+import android.Manifest
+import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import android.widget.Gallery
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import kotlin.contracts.contract
 
 @Composable
 private fun PermissionPickerLauncher(
@@ -89,5 +94,42 @@ fun ImagePickerWithPermission(
         permission = imagePermission,
         rationale = "이미지를 사용하기 위해서는 갤러리 접근 권한이 필요합니다.",
         onLaunchPicker = { galleryLauncher.launch("image/*") }
+    )
+}
+
+@Composable
+fun CameraPickerWithPermission(
+    onImageCaptured: (Uri?) -> Unit
+) {
+    val context = LocalContext.current
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
+    val cammeraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success: Boolean ->
+        if (success) {
+            onImageCaptured(cameraImageUri)
+        }
+    }
+
+    val cameraPermission = Manifest.permission.CAMERA
+
+    PermissionPickerLauncher(
+        permission = cameraPermission,
+        rationale = "사진을 촬영하려면 카메라 권한이 필요합니다.",
+        onLaunchPicker = {
+            cameraImageUri = createImageUri(context)
+            cameraImageUri?.let { cammeraLauncher.launch(it) }
+        }
+    )
+}
+
+fun createImageUri(context: Context): Uri? {
+    val contentValues = ContentValues().apply {
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        put(MediaStore.Images.Media.DISPLAY_NAME, "vote_${System.currentTimeMillis()}.jpg")
+    }
+    return context.contentResolver.insert(
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        contentValues
     )
 }

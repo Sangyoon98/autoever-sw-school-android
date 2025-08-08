@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
+import com.example.clazzi.ui.components.CameraPickerWithPermission
 import com.example.clazzi.ui.components.ImagePickerWithPermission
 import com.example.clazzi.viewmodel.VoteListViewModel
 import java.util.UUID
@@ -60,6 +61,7 @@ fun CreateVoteScreen(
 
     var showImagePickTypeSheet by remember { mutableStateOf(false) }
     var showImagePicker by remember { mutableStateOf(false) }
+    var showCameraPicker by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     Scaffold(
@@ -109,6 +111,7 @@ fun CreateVoteScreen(
                         },
                         modifier = Modifier.clickable {
                             showImagePickTypeSheet = false
+                            showCameraPicker = true
                         }
                     )
                     ListItem(
@@ -121,6 +124,16 @@ fun CreateVoteScreen(
                         }
                     )
                 }
+            }
+
+            // 권한 팝업 및 카메라로 이동
+            if (showCameraPicker) {
+                CameraPickerWithPermission(
+                    onImageCaptured = { uri ->
+                        imageUri = uri
+                        showCameraPicker = false
+                    }
+                )
             }
 
             // 권한 팝업 및 이미지 선택 화면으로 이동
