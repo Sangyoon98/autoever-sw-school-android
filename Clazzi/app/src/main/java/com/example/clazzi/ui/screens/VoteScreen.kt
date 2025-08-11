@@ -69,7 +69,7 @@ fun VoteScreen(
 
     // 초기 데이터 로드
     LaunchedEffect(voteId) {
-        voteViewModel.loadVote(voteId, voteListViewModel)
+        voteViewModel.loadVote(voteId)
     }
 
     // vote state
@@ -124,6 +124,7 @@ fun VoteScreen(
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
+                    .padding(16.dp)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -225,17 +226,17 @@ fun VoteScreen(
                                             modifier = Modifier.padding(8.dp)
                                         )
                                     }
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    LinearProgressIndicator(
-                                        progress = { percent },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(8.dp)
-                                            .clip(RoundedCornerShape(4.dp)),
-                                        color = Color(0xFF13F8A5),
-                                        trackColor = Color.White.copy(0.4f)
-                                    )
                                 }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                LinearProgressIndicator(
+                                    progress = { percent },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp)
+                                        .clip(RoundedCornerShape(4.dp)),
+                                    color = Color(0xFF13F8A5),
+                                    trackColor = Color.White.copy(0.4f)
+                                )
                             }
                         }
                 }
@@ -245,14 +246,10 @@ fun VoteScreen(
                     onClick = {
                         if (!hasVoted) {
                             coroutineScope.launch {
-                                val user = FirebaseAuth.getInstance().currentUser
-                                val uid = user?.uid ?: "0"
-
-                                val voterId = uid
                                 val selectedOption = vote.voteOptions[selectedOptionIndex]
 
                                 val updateOption = selectedOption.copy(
-                                    voters = selectedOption.voters + voterId
+                                    voters = selectedOption.voters + currentUserId
                                 )
 
                                 val updatedOptions = vote.voteOptions.mapIndexed { index, option ->
@@ -264,7 +261,6 @@ fun VoteScreen(
                                 )
 
                                 voteListViewModel.setVote(updatedVote)
-                                hasVoted = true
                             }
                         }
                     },
