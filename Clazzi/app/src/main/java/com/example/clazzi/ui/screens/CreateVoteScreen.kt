@@ -8,6 +8,7 @@ import android.net.Uri
 import android.util.Log.i
 import android.widget.DatePicker
 import android.widget.TimePicker
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -195,6 +196,10 @@ fun CreateVoteScreen(
 
             Button(
                 onClick = {
+                    if (imageUri == null) {
+                        Toast.makeText(navController.context, "이미지를 선택해주세요.", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
                     val newVote = Vote(
                         id = UUID.randomUUID().toString(),
                         title = title,

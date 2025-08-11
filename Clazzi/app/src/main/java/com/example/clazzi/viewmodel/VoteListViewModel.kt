@@ -92,7 +92,8 @@ class VoteListViewModel : ViewModel() {
                             "id" to it.id,
                             "optionText" to it.optionText
                         )
-                    }
+                    },
+                    "deadline" to vote.deadline
                 )
 
                 db.collection("votes")
