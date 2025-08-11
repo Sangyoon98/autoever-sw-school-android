@@ -53,10 +53,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.clazzi.util.formatDate
 import com.example.clazzi.viewmodel.VoteListViewModel
 import com.example.clazzi.viewmodel.VoteViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,6 +96,9 @@ fun VoteScreen(
     var selectedOptionIndex by remember { mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
+    // 투표 마감
+    var isBeforeDeadline by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -121,6 +126,12 @@ fun VoteScreen(
                 CircularProgressIndicator()
             }
         } else {
+            LaunchedEffect(vote.deadline) {
+                isBeforeDeadline = vote.deadline?.let {
+                    Date().before(it)
+                } ?: false
+            }
+
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -169,6 +180,16 @@ fun VoteScreen(
                         .clip(CircleShape)
                         .background(Color.LightGray)
                 )
+                Spacer(Modifier.height(20.dp))
+
+                Text(
+                    text = if (isBeforeDeadline) {
+                        "투표 마감 : ${formatDate(vote.deadline)}"
+                    } else {
+                        "투표 마감"
+                    }
+                )
+
                 Spacer(Modifier.height(20.dp))
 
                 if (!hasVoted) {    // 투표 하지 않았을 때
@@ -264,10 +285,18 @@ fun VoteScreen(
                             }
                         }
                     },
-                    enabled = !hasVoted,
+                    enabled = !hasVoted && isBeforeDeadline,
                     modifier = Modifier.width(200.dp)
                 ) {
-                    Text("투표하기")
+                    Text(
+                        if (!isBeforeDeadline) {
+                            "투표마감"
+                        } else if (hasVoted) {
+                            "투표함"
+                        } else {
+                            "투표하기"
+                        }
+                    )
                 }
             }
         }
