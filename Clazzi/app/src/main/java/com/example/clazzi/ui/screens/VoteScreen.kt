@@ -1,6 +1,7 @@
 package com.example.clazzi.ui.screens
 
 import android.R.attr.text
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -111,6 +113,28 @@ fun VoteScreen(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "뒤로가기"
                         )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            if (vote != null) {
+                                val voteUrl = "https://clazzi.web.app/vote/${vote.id}"
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, voteUrl)
+                                    type = "text/plain"
+                                }
+                                navController.context.startActivity(
+                                    Intent.createChooser(
+                                        sendIntent,
+                                        "투표 공유"
+                                    )
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.Share, contentDescription = "투표 공유")
                     }
                 }
             )
