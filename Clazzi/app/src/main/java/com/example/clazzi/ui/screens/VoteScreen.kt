@@ -119,7 +119,7 @@ fun VoteScreen(
                     IconButton(
                         onClick = {
                             if (vote != null) {
-                                val voteUrl = "https://clazzi.web.app/vote/${vote.id}"
+                                val voteUrl = "https://clazzi-9855a.web.app/vote/${vote.id}"
                                 val sendIntent = Intent().apply {
                                     action = Intent.ACTION_SEND
                                     putExtra(Intent.EXTRA_TEXT, voteUrl)
