@@ -1,20 +1,15 @@
 package com.example.clazzi
 
-import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.clazzi.model.Vote
-import com.example.clazzi.model.VoteOption
 import com.example.clazzi.ui.screens.AuthScreen
 import com.example.clazzi.ui.screens.CreateVoteScreen
 import com.example.clazzi.ui.screens.MyPageScreen
@@ -55,17 +50,23 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("vote/{voteId}") { backStackEntry ->
                         val voteId = backStackEntry.arguments?.getString("voteId") ?: "1"
-                        val vote = voteListViewModel.getVoteById(voteId)
-                        if (vote != null) {
+                        VoteScreen(
+                            navController = navController,
+                            voteListViewModel = voteListViewModel,
+                            voteId = voteId
+                        )
+
+//                        val vote = voteListViewModel.getVoteById(voteId)
+                        /*if (vote != null) {
                             VoteScreen(
                                 navController = navController,
-                                viewModel = voteListViewModel,
-                                vote = vote
+                                voteListViewModel = voteListViewModel,
+                                voteId = voteId
                             )
                         } else {
                             val context = LocalContext.current
                             Toast.makeText(context, "해당 투표가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
-                        }
+                        }*/
                     }/*
                     composable("createVote") {
                         CreateVoteScreen(
