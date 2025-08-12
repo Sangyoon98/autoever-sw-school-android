@@ -13,6 +13,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,11 @@ import com.sangyoon.userapp.viewmodel.UserViewModel
 @Composable
 fun UserListScreen(viewModel: UserViewModel, navController: NavController) {
     val users by viewModel.users.collectAsState()
+
+    // 화면 집입 시 한 번만 호출
+    LaunchedEffect(Unit) {
+        viewModel.loadUsers()
+    }
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }

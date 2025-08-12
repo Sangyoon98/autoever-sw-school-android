@@ -3,6 +3,7 @@ package com.sangyoon.userapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sangyoon.userapp.model.User
+import com.sangyoon.userapp.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,7 +32,7 @@ class UserViewModel(
 
     fun addUser(name: String, email: String) {
         viewModelScope.launch {
-            val newUser = User(id = 0, name = name, email = email)
+            val newUser = User(name = name, email = email)
             repository.createUser(newUser)
             loadUsers()
         }
