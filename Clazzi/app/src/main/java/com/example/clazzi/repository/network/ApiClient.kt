@@ -9,7 +9,7 @@ import kotlin.jvm.java
 
 object ApiClient {
     private const val BASE_URL = "https://timudyyvahvgwbdzyrym.supabase.co/rest/v1/"
-    private val API_KEY = BuildConfig.API_KEY
+    private const val API_KEY = BuildConfig.API_KEY
 
     private val authInterceptor = Interceptor { chain ->
         val request = chain.request().newBuilder()
