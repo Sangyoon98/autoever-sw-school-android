@@ -1,3 +1,7 @@
 package com.sangyoon.userapp.model
 
-data class User()
+data class User(
+    val id: Long? = null,
+    val name: String,
+    val email: String
+)

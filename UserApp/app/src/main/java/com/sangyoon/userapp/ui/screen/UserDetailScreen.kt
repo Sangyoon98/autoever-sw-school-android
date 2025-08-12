@@ -1,4 +1,4 @@
-package com.example.userapp.ui.screens
+package com.sangyoon.userapp.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.userapp.viewmodel.UserViewModel
+import com.sangyoon.userapp.viewmodel.UserViewModel
 
 @Composable
 fun UserDetailScreen(viewModel: UserViewModel, userId: Long, navController: NavController) {
