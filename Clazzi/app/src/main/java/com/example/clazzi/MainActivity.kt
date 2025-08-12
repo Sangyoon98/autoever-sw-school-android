@@ -11,6 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
+import com.example.clazzi.repository.FirebaseVoteRepository
+import com.example.clazzi.repository.RestApiVoteRepository
+import com.example.clazzi.repository.network.ApiClient
 import com.example.clazzi.ui.screens.AuthScreen
 import com.example.clazzi.ui.screens.CreateVoteScreen
 import com.example.clazzi.ui.screens.MyPageScreen
@@ -18,6 +21,9 @@ import com.example.clazzi.ui.screens.VoteListScreen
 import com.example.clazzi.ui.screens.VoteScreen
 import com.example.clazzi.ui.theme.ClazziTheme
 import com.example.clazzi.viewmodel.VoteListViewModel
+import com.example.clazzi.viewmodel.VoteListViewModelFactory
+import com.example.clazzi.viewmodel.VoteViewModel
+import com.example.clazzi.viewmodel.VoteViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -27,7 +33,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             ClazziTheme {
                 val navController = rememberNavController()
-                val voteListViewModel = viewModel<VoteListViewModel>()
+
+//                val repo = FirebaseVoteRepository() // Firebase
+                val repo = RestApiVoteRepository(ApiClient.voteApiService)  // Rest API
+                val voteListViewModel: VoteListViewModel = viewModel(
+                    factory = VoteListViewModelFactory(repo)
+                )
+//                val voteListViewModel: VoteListViewModel = viewModel()
+
+                val voteViewModel: VoteViewModel = viewModel(
+                    factory = VoteViewModelFactory(repo)
+                )
+
                 val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
 
                 NavHost(
@@ -53,13 +70,16 @@ class MainActivity : ComponentActivity() {
                         "vote/{voteId}",
                         deepLinks = listOf(
                             navDeepLink { uriPattern = "clazzi://vote/{voteId}" },  // Schema
-                            navDeepLink { uriPattern = "https://clazzi.web.app/vote/{voteId}" } // AppLink
+                            navDeepLink {
+                                uriPattern = "https://clazzi.web.app/vote/{voteId}"
+                            } // AppLink
                         )
                     ) { backStackEntry ->
                         val voteId = backStackEntry.arguments?.getString("voteId") ?: "1"
                         VoteScreen(
                             navController = navController,
                             voteListViewModel = voteListViewModel,
+                            voteViewModel = voteViewModel,
                             voteId = voteId
                         )
 

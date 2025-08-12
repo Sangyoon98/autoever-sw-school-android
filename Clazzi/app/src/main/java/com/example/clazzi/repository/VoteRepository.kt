@@ -9,4 +9,5 @@ interface VoteRepository {
     fun observeVotes(): Flow<List<Vote>>
     suspend fun addVote(vote: Vote, context: Context, imageUri: Uri)
     suspend fun setVote(vote: Vote)
+    fun observeVoteById(voteId: String): Flow<Vote?>
 }

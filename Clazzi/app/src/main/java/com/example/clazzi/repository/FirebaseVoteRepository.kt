@@ -83,4 +83,21 @@ class FirebaseVoteRepository : VoteRepository {
             Log.e("Firestore", "투표 업데이트 중 오류가 발생했습니다.",e)
         }
     }
+
+    override fun observeVoteById(voteId: String): Flow<Vote?> = callbackFlow {
+        val listener = db.collection("votes")
+            .document(voteId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    trySend(snapshot.toObject(Vote::class.java))
+                } else {
+                    trySend(null)
+                }
+            }
+        awaitClose { listener.remove() }
+    }
 }

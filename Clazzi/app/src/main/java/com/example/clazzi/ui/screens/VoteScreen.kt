@@ -66,11 +66,10 @@ import java.util.Date
 @Composable
 fun VoteScreen(
     navController: NavController,
+    voteViewModel: VoteViewModel,
     voteListViewModel: VoteListViewModel,
     voteId: String
 ) {
-    val voteViewModel: VoteViewModel = viewModel()
-
     // 초기 데이터 로드
     LaunchedEffect(voteId) {
         voteViewModel.loadVote(voteId)

@@ -1,13 +1,25 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
     namespace = "com.example.clazzi"
     compileSdk = 36
+
+    // Prefer Gradle property (CI-friendly), fallback to local.properties
+    val apiKeyProvider: Provider<String> = providers.gradleProperty("API_KEY")
+        .orElse(
+            providers.provider {
+                val props = gradleLocalProperties(rootDir, providers)
+                props.getProperty("API_KEY") ?: ""
+            }
+        )
 
     defaultConfig {
         applicationId = "com.example.clazzi"
@@ -19,8 +31,18 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+        compose = true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField("String", "API_KEY", "\"${apiKeyProvider.get()}\"")
+            isMinifyEnabled = false
+        }
         release {
+            buildConfigField("String", "API_KEY", "\"${apiKeyProvider.get()}\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -35,9 +57,6 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
@@ -48,6 +67,10 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.coil.compose)
     implementation(libs.firebase.storage.ktx)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
