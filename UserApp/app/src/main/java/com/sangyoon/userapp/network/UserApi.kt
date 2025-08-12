@@ -1,5 +1,6 @@
 package com.sangyoon.userapp.network
 
+import com.sangyoon.userapp.model.Products
 import com.sangyoon.userapp.model.User
 import retrofit2.Response
 import retrofit2.http.Body
@@ -24,4 +25,7 @@ interface UserApi {
 
     @DELETE("/users/{id}")
     suspend fun deleteUser(@Path("id") id: Long): Response<Unit>
+
+    @GET("/users/{id}/products")
+    suspend fun getUserProducts(@Path("id") id: Long): List<Products>
 }

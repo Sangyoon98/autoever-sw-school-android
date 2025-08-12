@@ -11,7 +11,9 @@ class UserRepository {
     }
 
     suspend fun getUser(id: Long): User {
-        return api.getUser(id)
+        val user = api.getUser(id)
+        val products = api.getUserProducts(id)
+        return user.copy(products = products)
     }
 
     suspend fun createUser(user: User): User {
