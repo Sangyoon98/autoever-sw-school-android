@@ -1,20 +1,17 @@
 package com.example.clazzi.ui.screens
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -30,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.ink.geometry.Box
 import com.example.clazzi.model.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -103,7 +99,10 @@ fun ChatRoomScreen(
                 reverseLayout = false
             ) {
                 items(messages) { message ->
-                    MessageItem(message, message.senderId == auth.currentUser?.uid)
+                    MessageItem(
+                        message = message,
+                        isCurrentUser = message.senderId == auth.currentUser?.uid
+                    )
                 }
             }
 
@@ -149,7 +148,8 @@ fun ChatRoomScreen(
 @Composable
 fun MessageItem(message: Message, isCurrentUser: Boolean) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(8.dp),
         horizontalArrangement = if (isCurrentUser) {
             Arrangement.End
@@ -158,8 +158,10 @@ fun MessageItem(message: Message, isCurrentUser: Boolean) {
         }
     ) {
         Card(
-            backgroundColor = if (isCurrentUser) Color(0xFFDCF8C6) else Color.White,
-            elevation = 2.dp
+            colors = CardDefaults.cardColors(
+                containerColor = if (isCurrentUser) Color(0xFFDCF8C6) else Color.White
+            ),
+            elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(
                 modifier = Modifier.padding(8.dp)
