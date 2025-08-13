@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import com.example.clazzi.repository.FirebaseVoteRepository
 import com.example.clazzi.ui.screens.AuthScreen
+import com.example.clazzi.ui.screens.ChatRoomScreen
 import com.example.clazzi.ui.screens.ChatScreen
 import com.example.clazzi.ui.screens.CreateVoteScreen
 import com.example.clazzi.ui.screens.MyPageScreen
@@ -171,7 +172,10 @@ fun MainScreen(
                 )
             }
             composable(BottomNavigationIem.Chat.route) {
-                ChatScreen()
+                ChatScreen(navController)
+            }
+            composable("chatRoom") {
+                ChatRoomScreen()
             }
             composable(BottomNavigationIem.MyPage.route) {
                 MyPageScreen(navController = parentNavController)
