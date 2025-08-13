@@ -55,20 +55,26 @@ fun ChatScreen(
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             items(users) { (uid, nickname) ->
-                ChatItem(nickname, navController)
+                ChatItem(uid, nickname, navController, currentUserId)
             }
         }
     }
 }
 
 @Composable
-fun ChatItem(nickname: String, navController: NavController) {
+fun ChatItem(uid: String, nickname: String, navController: NavController, currentUserId: String?) {
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                navController.navigate("chatRoom")
+                // 채팅방 ID 생성
+                val chatRoomId = if (currentUserId!! < uid) {
+                    "${currentUserId}_$uid"
+                } else {
+                    "${uid}_$currentUserId"
+                }
+                navController.navigate("chatRoom/$chatRoomId/$uid/$nickname")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {

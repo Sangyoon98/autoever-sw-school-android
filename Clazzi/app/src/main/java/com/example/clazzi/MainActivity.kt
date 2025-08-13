@@ -135,6 +135,16 @@ class MainActivity : ComponentActivity() {
                     composable("MyPage") {
                         MyPageScreen(navController = navController)
                     }
+                    composable("chatRoom/{chatRoomId}/{otherUserId}/{otherNickname}") { backStackEntry ->
+                        val chatRoomId = backStackEntry.arguments?.getString("chatRoomId") ?: ""
+                        val otherUserId = backStackEntry.arguments?.getString("otherUserId") ?: ""
+                        val otherNickname = backStackEntry.arguments?.getString("otherNickname") ?: ""
+                        ChatRoomScreen(
+                            chatRoomId,
+                            otherUserId,
+                            otherNickname
+                        )
+                    }
                 }
             }
         }
@@ -175,10 +185,7 @@ fun MainScreen(
                 )
             }
             composable(BottomNavigationIem.Chat.route) {
-                ChatScreen(navController)
-            }
-            composable("chatRoom") {
-                ChatRoomScreen()
+                ChatScreen(parentNavController)
             }
             composable(BottomNavigationIem.MyPage.route) {
                 MyPageScreen(navController = parentNavController)

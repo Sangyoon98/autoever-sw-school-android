@@ -1,30 +1,50 @@
 package com.example.clazzi.ui.screens
 
-import android.R
+import android.annotation.SuppressLint
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Card
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.ink.geometry.Box
 import com.example.clazzi.model.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import java.text.SimpleDateFormat
+import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatRoomScreen() {
+fun ChatRoomScreen(
+    chatRoomId: String,
+    otherUserId: String,
+    otherNickname: String
+) {
     val firestore = FirebaseFirestore.getInstance()
     val messages = remember { mutableStateListOf<Message>() }
     val messageText = remember { mutableStateOf("") }
@@ -38,42 +58,114 @@ fun ChatRoomScreen() {
             if (!document.exists()) {
                 // 채팅방이 없으면 문서 생성
                 chatDocRef.set(hashMapOf("createdAt" to System.currentTimeMillis()))
+                    .addOnSuccessListener {
+                        Log.i("ChatRoomScreen", "채팅방 문서 생성 성공 $chatRoomId")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.i("ChatRoomScreen", "채팅방 문서 생성 실패 $chatRoomId", e)
+                    }
+            }
+        }
+
+        // 메시지 실시간 리스너
+        chatDocRef.collection("messages")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, e ->
+                snapshot?.let {
+                    messages.clear()
+                    for (doc in it) {
+                        messages.add(
+                            Message(
+                                senderId = doc.getString("senderId") ?: "",
+                                content = doc.getString("content") ?: "",
+                                timestamp = doc.getLong("timestamp") ?: 0L
+                            )
+                        )
+                    }
+                }
+            }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("채팅방 with $otherNickname") }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            // 메시지 목록
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f),
+                reverseLayout = false
+            ) {
+                items(messages) { message ->
+                    MessageItem(message, message.senderId == auth.currentUser?.uid)
+                }
+            }
+
+            // 메시지 입력창
+            Row(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                TextField(
+                    value = messageText.value,
+                    onValueChange = { messageText.value = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("메시지를 입력하세요") }
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Button(
+                    onClick = {
+                        if (messageText.value.isNotBlank()) {
+                            val message = Message(
+                                senderId = auth.currentUser?.uid ?: "",
+                                content = messageText.value,
+                                timestamp = System.currentTimeMillis()
+                            )
+                            firestore.collection("chats")
+                                .document(chatRoomId)
+                                .collection("messages")
+                                .add(message)
+                                .addOnSuccessListener {
+                                    messageText.value = ""
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.i("ChatRoomScreen", "메시지 전송 실패", e)
+                                }
+                        }
+                    }
+                ) {
+                    Text("전송")
+                }
             }
         }
     }
+}
 
-    Column {
-        // 채팅방 타이틀
-        Text(
-            text = "채팅방 제목",
-            modifier = Modifier.padding(16.dp),
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        // 메시지 목록
-        LazyColumn(
-            modifier = Modifier.weight(1f)
-        ) {
-
+@Composable
+fun MessageItem(message: Message, isCurrentUser: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = if (isCurrentUser) {
+            Arrangement.End
+        } else {
+            Arrangement.Start
         }
-
-        // 메시지 입력창
-        Row(
-            modifier = Modifier.padding(16.dp)
+    ) {
+        Card(
+            backgroundColor = if (isCurrentUser) Color(0xFFDCF8C6) else Color.White,
+            elevation = 2.dp
         ) {
-            TextField(
-                value = "",
-                onValueChange = {},
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("메시지를 입력하세요") }
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Button(
-                onClick = {
-
-                }
+            Column(
+                modifier = Modifier.padding(8.dp)
             ) {
-                Text("전송")
+                Text(text = message.content)
+                Text(text = SimpleDateFormat("HH:mm").format(Date(message.timestamp)))
             }
         }
     }
