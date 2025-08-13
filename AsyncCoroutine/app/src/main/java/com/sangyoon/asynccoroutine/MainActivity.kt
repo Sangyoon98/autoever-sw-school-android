@@ -85,5 +85,12 @@ fun fetchSyncData(): String {
 
 suspend fun fetchAsyncData(): String {
     delay(5000)
+    fetchDetailDataFromNetwork()
     return "코루틴으로 가져온 데이터"
+}
+
+suspend fun fetchDetailDataFromNetwork(): String {
+    println("작업 스레드: ${Thread.currentThread().name}")
+    delay(2000)
+    return "코루틴으로 가져온 데이터!"
 }
