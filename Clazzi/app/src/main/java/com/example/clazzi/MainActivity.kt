@@ -7,6 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -15,6 +17,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +41,7 @@ import com.example.clazzi.viewmodel.VoteListViewModelFactory
 import com.example.clazzi.viewmodel.VoteViewModel
 import com.example.clazzi.viewmodel.VoteViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +62,18 @@ class MainActivity : ComponentActivity() {
                     factory = VoteViewModelFactory(repo)
                 )
 
-                val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
+                val auth = FirebaseAuth.getInstance()
+                val isLoggedIn = auth.currentUser != null
+
+                // 사용자 등록 (앱 시작 시 닉네임 저장)
+                LaunchedEffect(auth.currentUser) {
+                    auth.currentUser?.let { user ->
+                        val nickname = user.uid.take(4)
+                        FirebaseFirestore.getInstance().collection("users")
+                            .document(user.uid)
+                            .set(mapOf("nickname" to nickname))
+                    }
+                }
 
                 NavHost(
                     navController = navController,
@@ -113,6 +128,9 @@ class MainActivity : ComponentActivity() {
                             viewModel = voteListViewModel
                         )
                     }
+                    composable("MyPage") {
+                        MyPageScreen(navController = navController)
+                    }
                 }
             }
         }
@@ -121,14 +139,14 @@ class MainActivity : ComponentActivity() {
 
 sealed class BottomNavigationIem(val route: String, val icon: ImageVector, val label: String) {
     object VoteList : BottomNavigationIem("voteList", Icons.AutoMirrored.Filled.List, "투표")
-    object Chat : BottomNavigationIem("chat", Icons.AutoMirrored.Filled.List, "채팅")
-    object MyPage : BottomNavigationIem("myPage", Icons.AutoMirrored.Filled.List, "마이페이지")
+    object Chat : BottomNavigationIem("chat", Icons.Filled.ChatBubble, "채팅")
+    object MyPage : BottomNavigationIem("myPage", Icons.Default.Person, "마이페이지")
 }
 
 @Composable
 fun MainScreen(
     voteListViewModel: VoteListViewModel,
-    rootNavController: NavHostController
+    parentNavController: NavHostController
 ) {
     val navController = rememberNavController()
 
@@ -145,9 +163,10 @@ fun MainScreen(
             composable(BottomNavigationIem.VoteList.route) {
                 VoteListScreen(
                     navController = navController,
+                    parentNavController = parentNavController,
                     viewModel = voteListViewModel,
                     onVoteClicked = { voteId ->
-                        rootNavController.navigate("vote/$voteId")
+                        parentNavController.navigate("vote/$voteId")
                     }
                 )
             }
@@ -155,7 +174,7 @@ fun MainScreen(
                 ChatScreen()
             }
             composable(BottomNavigationIem.MyPage.route) {
-                MyPageScreen(navController = navController)
+                MyPageScreen(navController = parentNavController)
             }
         }
     }

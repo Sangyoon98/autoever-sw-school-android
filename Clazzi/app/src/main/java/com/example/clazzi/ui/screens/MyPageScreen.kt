@@ -29,6 +29,9 @@ fun MyPageScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "닉네임 없음"
+
+            Text(uid.take(4))
             Button(
                 onClick = {
                     auth.signOut()

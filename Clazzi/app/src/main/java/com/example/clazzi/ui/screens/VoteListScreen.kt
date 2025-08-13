@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.clazzi.R
 import com.example.clazzi.model.Vote
 import com.example.clazzi.ui.theme.ClazziTheme
@@ -48,6 +50,7 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun VoteListScreen(
     navController: NavController,
+    parentNavController: NavHostController,
     viewModel: VoteListViewModel,
     onVoteClicked: (String) -> Unit
 ) {
@@ -60,7 +63,7 @@ fun VoteListScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            navController.navigate("myPage")
+                            parentNavController.navigate("myPage")
                         }
                     ) {
                         Icon(
@@ -81,9 +84,9 @@ fun VoteListScreen(
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp),
+                .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
             items(voteList) { vote ->
                 VoteItem(vote) {
@@ -142,6 +145,7 @@ fun VoteListScreenPreview() {
     ClazziTheme {
         VoteListScreen(
             navController = NavController(context = LocalContext.current),
+            parentNavController = NavHostController(context = LocalContext.current),
             viewModel = viewModel(),
             onVoteClicked = {}
         )
