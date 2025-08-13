@@ -65,7 +65,7 @@ fun ChatRoomScreen(
 
         // 메시지 실시간 리스너
         chatDocRef.collection("messages")
-            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, e ->
                 snapshot?.let {
                     messages.clear()
@@ -96,7 +96,7 @@ fun ChatRoomScreen(
             LazyColumn(
                 modifier = Modifier
                     .weight(1f),
-                reverseLayout = false
+                reverseLayout = true
             ) {
                 items(messages) { message ->
                     MessageItem(
