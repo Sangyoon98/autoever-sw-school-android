@@ -76,7 +76,7 @@ fun VoteListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("createVote") }
+                onClick = { parentNavController.navigate("createVote") }
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "투표 만들기")
             }
